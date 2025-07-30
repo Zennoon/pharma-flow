@@ -30,3 +30,6 @@ PharmaFlow is a full-featured pharmacy management system built with Next.js and 
 8. **Managing wholesalers** - the app should have a feature to allow users, or at least the admin to manage different wholesalers, with the extent of the feature to be determined later.
 
 9. **Sales, and inventory analytics** - the app should provide users with sales, and inventory analytics for different time periods (daily, weekly, monthly).
+
+## Design
+For the interface design, I have chosen to mostly use components and blocks from the shadcn library, with customized theming.
