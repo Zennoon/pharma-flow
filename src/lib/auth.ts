@@ -17,10 +17,12 @@ export const auth = betterAuth({
     google: {
       clientId: String(process.env.GOOGLE_CLIENT_ID),
       clientSecret: String(process.env.GOOGLE_CLIENT_SECRET),
+      disableSignUp: true,
     },
     discord: {
       clientId: String(process.env.DISCORD_CLIENT_ID),
       clientSecret: String(process.env.DISCORD_CLIENT_SECRET),
+      disableSignUp: true,
     },
   },
   emailAndPassword: {
@@ -42,6 +44,8 @@ export const auth = betterAuth({
   },
   hooks: {
     before: createAuthMiddleware(async (ctx) => {
+      if (ctx.path === "/sign-up/social") {
+      }
       if (ctx.path === "/sign-up/email") {
         const email = String(ctx.body.email);
         const domain = email.split("@")[1];
@@ -82,7 +86,6 @@ export const auth = betterAuth({
       },
     },
   },
-
   user: {
     additionalFields: {
       role: {
