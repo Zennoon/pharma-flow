@@ -25,6 +25,9 @@ export const SignInDiscordButton = () => {
         onError: (ctx) => {
           toast.error(ctx.error.message);
         },
+        onSuccess: () => {
+          toast.success("Login Successful. Good to have you back!")
+        },
       },
     });
 

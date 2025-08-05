@@ -1,10 +1,5 @@
-import { SignOutbutton } from "@/components/sign-out-button";
-import React from "react";
+import { redirect } from "next/navigation";
 
-export default async function Page() {
-  return (
-    <div>
-      <SignOutbutton />
-    </div>
-  );
+export default function Page() {
+  redirect("/admin/dashboard/transactions/sale");
 }

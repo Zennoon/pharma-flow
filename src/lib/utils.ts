@@ -22,3 +22,20 @@ export function normalizeName(name: string) {
     .replace(/[^a-zA-Z\s'-]/g, "")
     .replace(/\b\w/g, (char) => char.toUpperCase());
 }
+
+export function getTitleFromUrl(parent: string, child?: string): string {
+  const titleMap = {
+    "/transactions": "Transactions",
+    "/transactions/sale": "Register a New Sale",
+    "/transactions/batch": "Register a New Arrival",
+    "/analytics": "Analytics",
+    "/analytics/sales": "Get Sales Analytics",
+    "/analytics/inventory": "Get Inventory Analytics",
+    "/personnel": "Personnel",
+    "/personnel/new": "Register a New User",
+  };
+
+  return titleMap[
+    `/${parent}${child ? `/${child}` : ""}` as keyof typeof titleMap
+  ];
+}

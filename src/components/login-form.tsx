@@ -11,10 +11,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { signInEmailAction } from "@/actions/sign-in-email-action";
 
-export function LoginForm({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
+export function LoginForm() {
   const [isPending, setIsPending] = useState(false);
   const router = useRouter();
 
@@ -43,7 +40,7 @@ export function LoginForm({
           </div>
           <span className="sr-only">PharmaFlow</span>
         </Link>
-        <h1 className="text-xl font-bold">Welcome to PharamFlow.</h1>
+        <h1 className="text-xl font-bold">Welcome to PharmaFlow.</h1>
       </div>
       <div className="flex flex-col gap-6">
         <div className="grid gap-3">
@@ -60,7 +57,7 @@ export function LoginForm({
             required
           />
         </div>
-        <Button type="submit" className="w-full">
+        <Button type="submit" className="w-full" disabled={isPending}>
           Login
         </Button>
       </div>
