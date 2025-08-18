@@ -14,12 +14,16 @@ export default async function Page() {
     redirect("/auth/login");
   }
 
+  if (!session.user.hasSetPassword) {
+    redirect("/auth/set-password");
+  }
+
   if (session.user.role === "USER") {
     redirect("/sales/dashboard");
   } else if (session.user.role === "ADMIN") {
     redirect("/admin/dashboard");
   }
-
+ 
   return (
     <div>
       <ThemeToggle />

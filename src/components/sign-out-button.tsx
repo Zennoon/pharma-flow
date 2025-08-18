@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
-export const SignOutbutton = () => {
+export const SignOutButton = () => {
   const [isPending, setIsPending] = useState(false);
   const router = useRouter();
 

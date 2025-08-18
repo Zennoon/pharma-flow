@@ -38,7 +38,6 @@ import {
 } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { NavProjects } from "./nav-projects";
 
 export default function AdminDashboardSidebar() {
   const baseUrl = "/admin/dashboard";

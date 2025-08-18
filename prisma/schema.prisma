@@ -8,37 +8,21 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Item {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  name           String
-  expirationDate DateTime
-  price          Float
-  amount         Int
-
-  @@map("items")
-}
-
-enum UserRole {
-  USER
-  ADMIN
-}
-
 model User {
   id        String   @id
   createdAt DateTime @unique
   updatedAt DateTime
 
-  name          String
-  email         String
-  emailVerified Boolean
-  image         String?
-  role          UserRole @default(USER)
-  banned        Boolean?
-  banReason     String?
-  banExpires    DateTime?
+  name           String
+  email          String    @unique
+  phoneNumber    String?
+  emailVerified  Boolean
+  image          String?
+  role           UserRole  @default(USER)
+  banned         Boolean?
+  banReason      String?
+  banExpires     DateTime?
+  hasSetPassword Boolean   @default(false)
 
   sessions Session[]
   accounts Account[]
@@ -46,15 +30,20 @@ model User {
   @@map("users")
 }
 
+enum UserRole {
+  USER
+  ADMIN
+}
+
 model Session {
   id        String   @id
   createdAt DateTime
   updatedAt DateTime
 
-  expiresAt DateTime
-  token     String   @unique
-  ipAddress String?
-  userAgent String?
+  expiresAt       DateTime
+  token           String   @unique
+  ipAddress       String?
+  userAgent       String?
   impoersonatedBy String?
 
   userId String
@@ -96,3 +85,119 @@ model Verification {
   @@map("verifications")
 }
 
+model Item {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name           String
+  expirationDate DateTime
+  salePrice      Decimal
+  totalStock     Int      @default(0)
+  type           ItemType
+
+  batchItems BatchItem[]
+  itemSales  ItemSale[]
+
+  @@unique(name: "specs", fields: [name, expirationDate, salePrice])
+  @@map("items")
+}
+
+enum ItemType {
+  DRUG
+  COSMETIC
+}
+
+model Batch {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  date DateTime
+
+  wholesalerId String
+  wholesaler   Wholesaler  @relation(fields: [wholesalerId], references: [id])
+  batchItems   BatchItem[]
+
+  @@map("batches")
+}
+
+model BatchItem {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  quantity      Int
+  purchasePrice Decimal
+  salePrice     Decimal
+
+  itemId  String
+  item    Item   @relation(fields: [itemId], references: [id])
+  batchId String
+  batch   Batch  @relation(fields: [batchId], references: [id])
+
+  @@map("batch_items")
+}
+
+model Sale {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  date       DateTime   @default(now())
+  totalPrice Decimal
+  itemSales  ItemSale[]
+
+  @@map("sales")
+}
+
+model ItemSale {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  quantity Int
+
+  saleId String
+  sale   Sale   @relation(fields: [saleId], references: [id])
+  itemId String
+  item   Item   @relation(fields: [itemId], references: [id])
+
+  @@unique([saleId, itemId])
+  @@map("item_sales")
+}
+
+model Wholesaler {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name        String
+  email       String?
+  phoneNumber String?
+
+  batches Batch[]
+  credits Credit[]
+
+  @@map("wholesalers")
+}
+
+model Credit {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  amount Decimal
+  date   DateTime     @default(now())
+  status CreditStatus @default(NOT_PAID)
+
+  wholesalerId String
+  wholesaler   Wholesaler @relation(fields: [wholesalerId], references: [id])
+
+  @@map("credits")
+}
+
+enum CreditStatus {
+  PAID
+  NOT_PAID
+}

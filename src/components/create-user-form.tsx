@@ -9,11 +9,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import RoleSelectInput from "./role-select-input";
-import { UserRole } from "@/generated/prisma";
 import { createUserAction } from "@/actions/create-user-action";
+import { toast } from "sonner";
 
 export default function CreateUserForm() {
-  const [role, setRole] = useState<UserRole>(UserRole.USER);
   const [isPending, setIsPending] = useState(false);
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -22,7 +21,16 @@ export default function CreateUserForm() {
 
     const formData = new FormData(e.target as HTMLFormElement);
     const { error } = await createUserAction(formData);
+
+    if (error) {
+      toast.error(error);
+    } else {
+      toast.success("You have successfully created a personnel. An email has been sent to the user for verification.");
+    }
+
+    setIsPending(false);
   }
+
   return (
     <div className="flex flex-col gap-6">
       <form onSubmit={handleSubmit}>
@@ -67,14 +75,13 @@ export default function CreateUserForm() {
                 name="phoneNumber"
                 type="tel"
                 placeholder="+251*********"
-                required
               />
             </div>
             <div className="grid gap-3">
               <Label htmlFor="role">Role</Label>
-              <RoleSelectInput setRole={setRole} className="w-full" />
+              <RoleSelectInput className="w-full" />
             </div>
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full" disabled={isPending}>
               Create
             </Button>
           </div>

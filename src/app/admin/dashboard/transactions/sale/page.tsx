@@ -1,7 +1,10 @@
+import { SignOutButton } from '@/components/sign-out-button'
 import React from 'react'
 
 export default function Page() {
   return (
-    <div>Page</div>
+    <div>
+      <SignOutButton />
+    </div>
   )
 }

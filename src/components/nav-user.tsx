@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   BadgeCheck,
@@ -7,13 +7,9 @@ import {
   CreditCard,
   LogOut,
   Sparkles,
-} from "lucide-react"
+} from "lucide-react";
 
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,21 +18,23 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/components/ui/sidebar"
-import { useSession } from "@/lib/auth-client"
-import { useRouter } from "next/navigation"
-import { toast } from "sonner"
+} from "@/components/ui/sidebar";
+import { signOut, useSession } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { useState } from "react";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
-  const router = useRouter();
   const { data: session, isPending } = useSession();
+  const [isLogoutPending, setIsLogoutPending] = useState(false);
+  const router = useRouter();
 
   if (isPending) {
     return (
@@ -44,18 +42,33 @@ export function NavUser() {
         size="lg"
         className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
       ></SidebarMenuButton>
-    )
-  }
-
-  if (!session) {
-    router.push("/auth/login");
-    toast.error("Please login to continue");
+    );
   }
 
   const user = {
     name: session?.user.name,
     email: session?.user.email,
-    avatar: session?.user.image || ""
+    avatar: session?.user.image || "",
+  };
+
+  async function handleClick() {
+    await signOut({
+      fetchOptions: {
+        onRequest: () => {
+          setIsLogoutPending(true);
+        },
+        onResponse: () => {
+          setIsLogoutPending(false);
+        },
+        onError: (ctx) => {
+          toast.error(ctx.error.message);
+        },
+        onSuccess: () => {
+          toast.success("You've logged out. See you soon!");
+          router.push("/auth/login");
+        },
+      },
+    });
   }
 
   return (
@@ -119,7 +132,7 @@ export function NavUser() {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleClick} disabled={isLogoutPending}>
               <LogOut />
               Log out
             </DropdownMenuItem>
@@ -127,5 +140,5 @@ export function NavUser() {
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
-  )
+  );
 }

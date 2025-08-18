@@ -8,6 +8,7 @@ import { UserRole } from "@/generated/prisma";
 import { ac, roles } from "@/lib/permissions";
 import { admin } from "better-auth/plugins";
 import { nextCookies } from "better-auth/next-js";
+import { sendVerificationEmailAction } from "@/actions/send-verification-email-action";
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
@@ -39,7 +40,13 @@ export const auth = betterAuth({
       const link = new URL(url);
       link.searchParams.set("callbackURL", "/auth/verify");
 
-      // TODO: send the verification email here
+      await sendVerificationEmailAction({
+        to: user.email,
+        meta: {
+          username: user.name,
+          link: String(url)
+        }
+      });
     },
   },
   hooks: {
@@ -92,9 +99,12 @@ export const auth = betterAuth({
         type: ["USER", "ADMIN"] as Array<UserRole>,
         input: false,
       },
-      lastName: {
-        type: "string",
+      phoneNumber: {
+        type: "string"
       },
+      hasSetPassword: {
+        type: "boolean"
+      }
     },
   },
 

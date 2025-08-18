@@ -24,6 +24,9 @@ export default async function AdminDashboardLayout({
   if (!session) {
     redirect("/auth/login");
   }
+  if (!session.user.hasSetPassword) {
+    redirect("/auth/set-password");
+  }
   if (session.user.role !== "ADMIN") {
     redirect("/sales/dashboard");
   }
